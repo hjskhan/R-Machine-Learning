@@ -1,0 +1,318 @@
+---
+title: "lab2_03"
+author: "Hamza Jamal 22DSMSA103"
+date: '2022-12-08'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\tableofcontents
+\newpage
+
+# Data
+
+```{r}
+Data03 = read.csv("data 4.20.csv")
+names(Data03)
+```
+Here, __'y'__ represents the whiteness of rayon.
+
+# Scatter Plot
+
+```{r}
+plot(Data03)
+```
+
+# Fitting the model
+
+```{r}
+ml03_1 = lm(y ~ ., data = Data03)
+summary(ml03_1)
+```
+
+From the above fitted model it is clear that only __p value__ of the __Acid.Temp__ variable is below $0.05$ and rest of the explanatory variable have their p value greater than $0.05$.
+
+This implies that __only__ the __Acid.Temp__ variable is __significant__ and rest are insignificant.
+
+Adding to it the adjusted $R^2$ for the model is $0.3527$. Therefore, the explanatory variables explain $35.27\%$ of the variation in y.
+
+But, since the __p value__ of the model is less than $0.05$ thereby, the __model is significant__.
+
+
+# Fitting the model using forward and backward selection
+
+__Use Forward and Backward selection method to ft the accurate model and explain it.__ 
+
+## Forward selection model fitting
+
+```{r}
+round(cor(Data03), 2) 
+```
+
+
+
+### Variable :  Acid.Temp
+
+We have the model as:
+
+$$y = \beta_0 + \beta_1 \times Acid.Temp + \epsilon$$
+
+Fitting the model using _lm function_:
+
+
+```{r}
+ml03_2 = lm(y ~ Acid.Temp, data = Data03)
+summary(ml03_2)
+```
+
+From the above table it is clear that the __Acid.Temp__ is __significant__ for the model since it's __p value__ is less than $0.05$.
+
+The __p value__ for the model is also less than $0.05$ which means that the model is significant.
+
+The value of $R^2$ is $0.2979$ which means that $29.79\%$ of variability in y is explained by Acid.Temp.
+
+Since, there are no insignificant variables therefore we proceed to our next model.
+
+
+### Variable :  Acid.Temp and Acid.Conc
+
+We have the model as:
+
+$$y = \beta_0 + \beta_1 \times Acid.Temp + \beta_2 \times Acid.Conc + \epsilon$$
+
+Fitting the model using _lm function_:
+
+
+```{r}
+ml03_3 = lm(y ~ Acid.Temp + Acid.Conc, data = Data03)
+summary(ml03_3)
+```
+
+From the above table it is clear that the __Acid.Temp__ and __Acid.Conc__ is __significant__ for the model since it's __p value__ is less than or very close to $0.05$.
+
+The __p value__ for the model is also less than $0.05$ which means that the model is significant.
+
+The value of adjusted $R^2$ is $0.3717$ which means that $37.17\%$ of variability in y is explained by the explanatory variables.
+
+Since, there are no insignificant variables therefore we proceed to our next model.
+
+
+### Variable :  Acid.Temp, Acid.Conc and Sulfide.Conc
+
+We have the model as:
+
+$$y = \beta_0 + \beta_1 \times Acid.Temp + \beta_2 \times Acid.Conc + \beta_3 \times Sulfide.Conc  + \epsilon$$
+
+Fitting the model using _lm function_:
+
+
+```{r}
+ml03_4 = lm(y ~ Acid.Temp + Acid.Conc + Sulfide.Conc, data = Data03)
+summary(ml03_4)
+```
+
+
+From the above table it is clear that the __Acid.Temp__ and __Acid.Conc__ is __significant__ for the model since it's __p value__ is less than or very close to $0.05$.
+
+But, the __p value__ of __Sulfide.Conc__ is greater than $0.05$. Therefore, it is __insignificant__. 
+
+The __p value__ for the model is also less than $0.05$ which means that the model is significant.
+
+The value of adjusted $R^2$ is $0.3717$ which means that $37.17\%$ of variability in y is explained by the explanatory variables.
+
+Since, we got an insignificant variable thereby we stop over here.
+
+
+The fit for the model by forward selection method is given by:
+
+
+$$y = 45.4263 + 0.7454  \times Acid.Temp + 20.2292 \times Acid.Conc + \epsilon$$
+
+## Backward selection model fitting
+
+### Variable :  Acid.Temp, Acid.Conc, Sulfide.Conc, Bleach.Amount and Water.temp
+
+$$y = \beta_0 + \beta_1 \times Acid.Temp + \beta_2 \times Acid.Conc + \beta_3 \times Sulfide.Conc + \beta_4 \times Water.Temp + \beta_5 \times Bleach.Amount + \epsilon$$
+
+Fitting the model using _lm function_:
+
+
+```{r}
+ml03_5 = lm(y ~ ., data = Data03)
+summary(ml03_5)
+```
+
+From the above table clear that only __Acid.Temp__ is __significant__ as it's __p value__ is less than $0.05$.
+
+The value of __Adjusted $R^2$__ is $0.3527$. It means that these explanatory explains $35.27\%$ of variability of y.
+
+The __p value__ of the model is less than $0.05$. It means that the above model is __significant__.
+
+Since, the most __insignificant__ explanatory variable is __Sulfide.Conc__ therby we __drop__ this variable on the next model.
+
+
+### Variable :  Acid.Temp, Acid.Conc, Bleach.Amount and Water.temp
+
+$$y = \beta_0 + \beta_1 \times Acid.Temp + \beta_2 \times Acid.Conc + \beta_3 \times Water.Temp + \beta_4 \times Bleach.Amount + \epsilon$$
+
+Fitting the model using _lm function_:
+
+```{r}
+ml03_6 = lm(y ~ . - Sulfide.Conc, data = Data03)
+summary(ml03_6)
+```
+
+From the above table clear that only __Acid.Temp__ is __significant__ as it's __p value__ is less than $0.05$.
+
+The value of __Adjusted $R^2$__ is $0.3721$. It means that these explanatory explains $37.21\%$ of variability of y.
+
+The __p value__ of the model is less than $0.05$. It means that the above model is __significant__.
+
+Since, the most __insignificant__ explanatory variable is __Bleach.Amount__ therby we __drop__ this variable on the next model.
+
+### Variable :  Acid.Temp, Acid.Conc and Water.temp
+
+$$y = \beta_0 + \beta_1 \times Acid.Temp + \beta_2 \times Acid.Conc + \beta_3 \times Water.Temp + \epsilon$$
+
+Fitting the model using _lm function_:
+
+```{r}
+ml03_7 = lm(y ~ . - Sulfide.Conc - Bleach.Amount, data = Data03)
+summary(ml03_7)
+```
+
+From the above table clear that only __Acid.Temp__ and __Acid.Conc__ are__significant__ as it's __p value__ is less than or very close to $0.05$.
+
+The value of __Adjusted $R^2$__ is $0.3809$. It means that these explanatory explains $38.09\%$ of variability of y.
+
+The __p value__ of the model is less than $0.05$. It means that the above model is __significant__.
+
+Since, the most __insignificant__ explanatory variable is __Water.Temp__ thereby we __drop__ this variable on the next model.
+
+### Variable :  Acid.Temp and Acid.Conc
+
+$$y = \beta_0 + \beta_1 \times Acid.Temp + \beta_2 \times Acid.Conc + \epsilon$$
+
+Fitting the model using _lm function_:
+
+```{r}
+ml03_8 = lm(y ~ . - Sulfide.Conc - Bleach.Amount - Water.Temp, data = Data03)
+summary(ml03_8)
+```
+
+
+
+From the above table clear that __Acid.Temp__ and __Acid.Conc__ are __significant__ as there __p value__ is less than or very close to $0.05$.
+
+The value of __Adjusted $R^2$__ is $0.3717$. It means that these explanatory explains $37.17\%$ of variability of y.
+
+The __p value__ of the model is less than $0.05$. It means that the above model is __significant__.
+
+Since, the model does not contain any insignificant variable thereby, this model is the most significant and best fit.
+
+
+# Best fit for the given model
+
+
+Now, we notice that the best fit model in forward and backward selection method comes out to be same.
+
+Therefore, our best fit model for the given data is given as: 
+
+$y=  45.4263 + 0.7454 \times Acid.Temp + 20.2292 \times Acid.Conc + \epsilon$
+
+
+The value of __Adjusted $R^2$__ in case of the best fit for the model is $0.3717$. It means that these explanatory explains $37.17\%$ of variability of y.
+
+The __p value__ of the model is less than $0.05$. It means that the above model is __significant__.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Since 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
