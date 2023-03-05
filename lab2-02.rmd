@@ -1,0 +1,388 @@
+---
+title: "Lab02-02"
+author: "Hamza Jamal 22DSMSA103"
+output: pdf_document
+date: '2022-12-02'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\tableofcontents
+\newpage
+
+# Data
+
+__2.2.1  Read Credit data into R. The Credit data is uploaded on Google Classroom, download from there and use it.__
+
+```{r}
+Data02 = read.csv("credit.csv")
+
+Data02$Own = as.factor(Data02$Own)
+
+```
+
+# Variables
+
+```{r}
+Balance = Data02$Balance
+Income = Data02$Income
+Limit = Data02$Limit
+Rating = Data02$Rating
+Cards = Data02$Cards
+Age = Data02$Age
+Education = Data02$Education
+Own = Data02$Own
+Student = Data02$Student
+Married = Data02$Married
+Region = Data02$Region
+```
+
+__Categorical variables__
+
+```{r}
+Own = as.factor(Own)
+Student = as.factor(Student)
+Married = as.factor(Married)
+Region = as.factor(Region)
+View(Data02)
+```
+
+# Scatter Plot
+
+```{r}
+plot(Data02)
+```
+
+
+# Fitting the model
+
+__2.2.2 Fit the model by considering Balance as response variable and ft the model by considering all explanatory variables.__
+
+```{r}
+ml02_1 = lm(Balance ~ Income + Limit + Rating + Cards + Age + Education + Own +
+            Student + Married + Region, data = Data02)
+summary(ml02_1)
+
+```
+
+# Dummy Variables
+
+__2.2.3 Use Student as dummy variable and explain the result__
+
+Now fitting the model using student as a dummy variable, we have the following model:
+
+$Balance = \beta_0 + \beta_1 \times Student + \epsilon$
+
+```{r}
+ml02_2 = lm(Balance ~ Student, data = Data02)
+summary(ml02_2)
+```
+
+
+The estimated balance for non-students is $\$480.37$ but on the other hand students are estimated to have balance of $\$396.46$. Therefore total balance is $\$509.80 + \$19.73 = \$529.53$.
+
+Also, the __p-value__ for Student ( _dummy variable_ ) is $1.49e-07$, which is __less than $0.05$__. Therefore, we reject Ho and thereby __Student variable is significant__.
+
+It means that credit card balance depends __significantly__ on whether the person is student or not.
+
+But, the the value of __$R^2$__ and __adjusted $R^2$__ is about only $6.5\%$ which is very low. Therefore the above model is __insignificant__
+
+
+# Other Dummy Variables
+
+__Also identify other dummy variables and fit the model and explain the results.__
+
+## Married as dummy variable.
+
+We have the following model.
+
+$Balance = \beta_0 + \beta_1 \times Married + \epsilon$
+
+```{r}
+ml02_3 = lm(Balance ~ Married, data = Data02)
+summary(ml02_3)
+```
+
+The __p-value__ for Married ( _dummy variable_ ) is $0.91$ being __very high__ and is greater than 0.05. Therefore, we accept Ho and thereby __Married variable is insignificant__.
+
+It means that credit card balance does not depend on whether the person is married or not.
+
+The the value of __$R^2$__ and __adjusted $R^2$__ is zero. Therefore the above model is __insignificant__
+
+
+## Region as dummy variable.
+
+We have the following model:
+
+$Balance = \beta_0 + \beta_1 \times Region + \epsilon$
+
+```{r}
+ml02_4 = lm(Balance ~ Region, data = Data02)
+summary(ml02_4)
+```
+
+The __p-value__ for Region ( _dummy variable_ ) is __very high__ being $0.9575$, which is greater than 0.05. Therefore, we accept $\text{H}_{0}$ and thereby Region variable is significant.
+
+Also, the Multiple R-square is $0.0002188$ which is approximately zero. The Adjusted R-square has value in negative.
+
+Therefore, the model is __insignificant__.
+
+## Own as dummy variable.
+
+We have the following model:
+
+$Balance = \beta_0 + \beta_1 \times Own + \epsilon$
+
+```{r}
+ml02_5 = lm(Balance ~ Own, data = Data02)
+summary(ml02_5)
+```
+
+The p-value for Own ( _dummy variable_ ) is high being 0.669, which is greater than 0.05. Therefore, we accept $\text{H}_{0}$ and thereby Own variable is insignificant.
+
+Also, the Multiple R-square is $0.0004611$ which is approximately zero. The Adjusted R-square has value in negative.
+
+Therefore, the above model is __insignificant__.
+
+
+# Fitting the model using forward and backward selection
+
+__Use Forward and Backward selection method to ft the accurate model and explain it.__ 
+
+## Forward selection model fitting
+
+
+### Variable : Income 
+
+We have the model as:
+
+$$Balance = \beta_0 + \beta_1 \times income + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml02_6 = lm(Balance ~ Income, data = Data02)
+summary(ml02_6)
+```
+
+From the above model it is very clear that since p value for Income is almost zero,  which is less than 0.05. Thereby, the explanatory variable __income is significant__.
+
+Also, the model has very low p value and almost zero, which indicates that the __model is significant__.
+
+But, the value of $R^2$ and adjusted $R^2$ is very low around __$0.213$__. This indicates that __income explains $21.3\%$ of balance__. 
+
+Therefore, this model is not a good fit and we proceed to the next step.
+
+
+### Variable : Income and Limit.
+
+We have the model as:
+
+$$Balance = \beta_0 + \beta_1 \times income + \beta_2 \times limit + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml02_7 = lm(Balance ~ Income + Limit, data = Data02)
+summary(ml02_7)
+```
+
+From the above model it is very clear that since p values for Income and Limit are almost zero which is less than 0.05. Thereby, the explanatory variable __Income and Limit are significant__.
+
+Also, the model has very low p value and almost zero, which indicates that the __model is significant__.
+
+The value of $R^2$ and adjusted $R^2$ is $0.8711$ and $0.8705$ respectively. This indicates that the __explanatory variables explains $87.05\%$ variability of balance__. Thereby, this __model is a good fit__.
+
+Since, it is clear that when compared to previous model the value of $R^2$ has increased also the model is significant. Therefore, we can consider this model and proceed further for forward selection.
+
+
+
+### Variable : Income, Limit and Rating
+
+We have the model as:
+
+$$Balance = \beta_0 + \beta_1 \times income + \beta_2 \times limit + \beta_3 \times rating + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml02_8 = lm(Balance ~ Income + Limit + Rating, data = Data02)
+summary(ml02_8)
+```
+
+From the above model it is very clear that since p values for Income, Rating and Limit are almost or very close to zero (i.e less than 0.05). Thereby, the __explanatory variables are significant__.
+
+Also, the model has very low p value and almost zero, which indicates that the __model is significant__.
+
+The value of $R^2$ and adjusted $R^2$ is $0.8762$ and $0.8753$ respectively. This indicates that the __explanatory variables explains $87.53\%$ variability of balance__. Thereby, this __model is a good fit__.
+
+Since, it is clear that when compared to previous model the value of $R^2$ has increased also the model is significant. Therefore, we can consider this model and proceed further for forward selection.
+
+
+
+### Variable : Income, Limit, Rating and Cards
+
+We have the model as:
+
+$$Balance = \beta_0 + \beta_1 \times income + \beta_2 \times limit + \beta_3 \times rating + \beta_4 \times cards + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml02_9 = lm(Balance ~ Income + Limit + Rating + Cards, data = Data02)
+summary(ml02_9)
+```
+
+
+From the above model it is very clear that since __p values__ for Income, Rating and Limit are less than 0.05. Thereby, these __explanatory variables are significant__.
+
+But, we see that the __Cards__ variable is not significant as __p value__ is less than 0.05.
+
+
+Since, we got an insignificant variable, we stop our forward selection.
+
+The model which best fits by __Forward Selection Method__  is given by:
+
+
+$$Balance = -489.72748 - 7.71931 \times income + 0.08467  \times limit + 2.69858 \times rating + \epsilon$$
+
+
+## Backward selection model fitting
+
+
+### Variable : Income, Limit, Rating, Cards, Age, Education, Own, Student, Married, Region
+
+We have the model as:
+
+$Balance = \beta_0 + \beta_1 \times Income + \beta_2 \times Limit + \beta_3 \times Rating + \beta_4 \times Cards + \beta_5 \times Age +\beta_6 \times Education + \beta_7 \times Own +\beta_8 \times Student + \beta_9 \times Married + \beta_10 \times Region + \epsilon$
+
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml02_10 = lm(Balance ~ ., data = Data02)
+summary(ml02_10)
+```
+
+From above regression table it is clear that the __p value__ of education is the highest being 0.4921. Therefore, it is the most insignificant.
+
+Thereby, we __drop out__ the __education variable__ from our model and proceed further for backward selection.
+
+Here, the adjusted __$R^2$__ is $0.9538$, which means that the above explanatory varible explain about $0.9538\%$ of the response variable __balance__.
+
+### Varible : Income, Limit, Rating, Cards, Age, Own, Student, Married, Region
+
+We have the model as:
+
+$Balance = \beta_0 + \beta_1 \times Income + \beta_2 \times Limit + \beta_3 \times Rating + \beta_4 \times Cards + \beta_5 \times Age +\beta_6 \times Region + \beta_7 \times Own +\beta_8 \times Student + \beta_9 \times Married + \epsilon$
+
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml02_11 = lm(Balance ~ . - Education, data = Data02)
+summary(ml02_11)
+```
+
+From above regression table it is clear that the __p value__ of __Region variable__ is the highest being 0.3965. Therefore, it is the most insignificant.
+
+Thereby, we __drop out__ the __Region variable__ from our model and proceed further for backward selection.
+
+Here, the adjusted __$R^2$__ is $0.9539$, which means that the above explanatory variable explain about $0.9539\%$ of the response variable __balance__. Also, the adjusted $R^2$ has increased as compared to the previous ,model.
+
+
+### Varible : Income, Limit, Rating, Cards, Age, Own, Student, Married
+
+We have the model as:
+
+$Balance = \beta_0 + \beta_1 \times Income + \beta_2 \times Limit + \beta_3 \times Rating + \beta_4 \times Cards + \beta_5 \times Age +\beta_6 \times Married + \beta_7 \times Own +\beta_8 \times Student + \epsilon$
+
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml02_13 = lm(Balance ~ . - Education - Region, data = Data02)
+summary(ml02_13)
+```
+
+
+
+From above regression table it is clear that the __p value__ of __Married variable__ is the highest being 0.3965. Therefore, it is the most insignificant.
+
+Thereby, we __drop out__ the __Married variable__ from our model and proceed further for backward selection.
+
+Here, the adjusted __$R^2$__ is $0.954$, which means that the above explanatory variable explain about $0.954\%$ of the response variable __balance__. Also, the adjusted $R^2$ has increased as compared to the previous ,model.
+
+
+### Varible : Income, Limit, Rating, Cards, Age, Own, Student
+
+We have the model as:
+
+$Balance = \beta_0 + \beta_1 \times Income + \beta_2 \times Limit + \beta_3 \times Rating + \beta_4 \times Cards + \beta_5 \times Age +\beta_6 \times Student + \beta_7 \times Own + \epsilon$
+
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml02_12 = lm(Balance ~ . - Education - Region - Married, data = Data02)
+summary(ml02_12)
+```
+
+From above regression table it is clear that the __p value__ of __Own variable__ is the highest being 0.3965. Therefore, it is the most insignificant.
+
+Thereby, we __drop out__ the __Own variable__ from our model and proceed further for backward selection.
+
+Here, the adjusted __$R^2$__ is $0.954$, which means that the above explanatory variable explain about $0.954\%$ of the response variable __balance__. Also, the adjusted $R^2$ is same as compared to the previous ,model.
+
+
+
+### Varible : Income, Limit, Rating, Cards, Age, Student
+
+We have the model as:
+
+$Balance = \beta_0 + \beta_1 \times Income + \beta_2 \times Limit + \beta_3 \times Rating + \beta_4 \times Cards + \beta_5 \times Age +\beta_6 \times Student + \epsilon$
+
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml02_13 = lm(Balance ~ . - Education - Region - Married - Own, data = Data02)
+summary(ml02_13)
+```
+
+From above we come to now that __all__ the __explanatory variables__ have the __p value__ less than $0.05$. Thereby, we can say that they all are __significant__.
+
+The value of __adjusted $R^2$__ is $0.954$, which means that the above explanatory variable explains aboiut $95.4\%$ of the variation in __Balance__. 
+
+Since, this model does not have any insignificant variables and the $R^2$ therefore we can say that it is the best fit for our model.
+
+
+
+# Best fit for the model
+
+Now, the best fit for our model is given by:
+
+$Balance = -493.73419  -7.79508 \times Income + 0.19369 \times Limit + 1.09119 \times Rating + 18.21190 \times Cards  -0.62406 \times Age +  425.60994 \times Student + \epsilon$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
