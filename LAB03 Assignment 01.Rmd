@@ -1,5 +1,5 @@
 ---
-title: "LAB 03-Assignment 01"
+title: "Non Linear Regression"
 author: "Hamza Jamal 22DSMSA103"
 date: '2022-12-17'
 output: pdf_document
