@@ -1,0 +1,230 @@
+---
+title: "LAB 03-Assignment 01"
+author: "Hamza Jamal 22DSMSA103"
+date: '2022-12-17'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+\tableofcontents
+\newpage
+
+# Loading Libraries
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(car)
+```
+
+
+# Data 
+
+```{r}
+Data03_1 = read.csv("data lab 3.csv")
+names(Data03_1)
+```
+
+# Variables
+
+## Linear Variables
+
+```{r}
+mol_frac = Data03_1$mole_frac_sol
+dispn = Data03_1$dispn_p_sol
+dip = Data03_1$dip_p_sol
+h2bond = Data03_1$h2bond_hp_sol
+```
+
+## Quadratic Variables
+
+```{r}
+qmol_frac = mol_frac^2
+qdispn = dispn^2
+qdip = dip^2
+qh2bond = h2bond^2
+```
+
+
+# Scatter Plot
+
+```{r}
+plot(Data03_1)
+```
+
+From the above plot it is very clear that relation between mole fraction solubility is non linear with other variables.
+
+
+
+```{r}
+round(cor(Data03_1),2)
+round(cov(Data03_1),2)
+```
+
+
+
+
+# Fitting the model
+
+## Fitting as Linear model
+
+The linear model is given as:
+
+$$mol\_frac = \beta_0 + \beta_1 \times dispn + \beta_2 \times dip + \beta_3 \times h2bond$$
+
+
+```{r}
+ml03_1 = lm(mole_frac_sol ~ ., data = Data03_1)
+summary(ml03_1)
+```
+
+In the above model we have fitted it assuming a linear model.
+
+We see that all the explanatory variables are significant as their p value is below $0.05$. 
+
+The model has p value below $0.05$. Therefore the model is significant.
+
+Also, the __adjusted $R^2$__ is $0.8486$ which means that the explanatory variables explain $84.86\%$ of variability of the response variable.
+
+
+## Fitting as Quadratic model
+
+Now, we fit the whole model in quadratic form.
+
+### Varibles : dispn, dip, h2bond, qdisn, qdip, qh2bond
+
+The model is given as: 
+
+$$mol\_frac = \beta_0 + \beta_1 \times dispn + \beta_2 \times dip + \beta_3 \times h2bond + \beta_4 \times qdispn + \beta_5 \times qdip + \beta_6 \times qh2bond$$
+
+
+```{r}
+ml03_2 = lm(mole_frac_sol ~ dispn + qdispn + dip + qdip + h2bond + qh2bond, data = Data03_1)
+summary(ml03_2)
+```
+
+
+We see from the above model that all the __explanatory variables__ are __insignificant__ except for variable __h2bond__, it is __significant__ and having p value below $0.05$.
+
+The model has p value lower than $0.05$ which means that the model is significant.
+
+Also, the __adjusted $R^2$__ is $0.8704$ which means the explanatory variables explain $87.04\%$ of variability of the response variable.
+
+
+Now, since variable __qdip__ is most insignificant, thereby __dropping__ it from the model.
+
+### Varibles : dispn, dip, h2bond, qdisn, qh2bond
+
+The model is given as: 
+
+$$mol\_frac = \beta_0 + \beta_1 \times dispn + \beta_2 \times dip + \beta_3 \times h2bond + \beta_4 \times qdispn  + \beta_5 \times qh2bond$$
+
+
+```{r}
+ml03_3 = lm(mole_frac_sol ~ dispn + qdispn + dip + h2bond + qh2bond, data = Data03_1)
+summary(ml03_3)
+```
+
+We see from the above model that all the __explanatory variables__ are __significant__ except for variable __dispn__ and __qdispn__, they is __insignificant__ and having p value above $0.05$.
+
+The model has p value lower than $0.05$ which means that the model is significant.
+
+Also, the __adjusted $R^2$__ is $87.66$ which means the explanatory variables explain $87.66\%$ of variability of the response variable.
+
+
+Now, since variable __qdispn__ is most insignificant, thereby dropping it from the model.
+
+
+### Varibles : dispn, dip, h2bond, qh2bond
+
+The model is given as: 
+
+$$mol\_frac = \beta_0 + \beta_1 \times dispn + \beta_2 \times dip + \beta_3 \times h2bond + \beta_4 \times qh2bond$$
+
+
+```{r}
+ml03_4 = lm(mole_frac_sol ~ dispn + dip + h2bond + qh2bond, data = Data03_1)
+summary(ml03_4)
+```
+
+From the above model it is clear that __all the explanatory variables__ are significant, since the p value is below $0.05$
+
+Since, the __p value__ of the model is less than $0.05$ thereby, the model is significant.
+
+Also, the above explanatory variables explain about $87.23\%$ variability of mole fraction solubility.
+
+Thereby interprating the values of the constants:
+
+$\beta_0 = -0.25$
+$\beta_1 = 0.77$
+$\beta_2 = 0.02$
+$\beta_3 = -0.04$
+$\beta_4 = 0.0008$
+
+## Best fit model
+
+The best fit model is given as:
+
+$$mol\_frac = -0.25 + 0.77 \times dispn + 0.02 \times dip + -0.04 \times h2bond + 0.0008015 \times qh2bond$$
+
+
+# Durbin Watson Test
+
+
+```{r}
+durbinWatsonTest(ml03_4)
+```
+
+Since the p value is greater than $0.05$, thereby we accept the null hypothesis. Therefore,  there is __no autocorrelation__ among the error terms of the model. 
+
+
+# VIF of the model
+
+```{r}
+round(vif(ml03_4),2)
+```
+The VIF value for each variable should be less than $10.0$. If the VIF value is greater than $10.0$ then we say that there is multicollinearity present in the model. In this case we drop that variable from our model.
+
+
+Since, the VIF value for all the variables is less than $10.0$, therefore we can say that there is very less amount of multicollinearity present in our model. Therefore, we do not drop any variable from our model.
+
+
+# Residual Plot
+
+
+```{r}
+qplot(fitted.values(ml03_4), residuals(ml03_4)) + geom_smooth(method = "lm", se = F)
+```
+
+
+From the above residual plot it is clear that there is no pattern in the plot. Also, most the residuals are very close to zero.  Therefore, we can say that the model is good fit.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
