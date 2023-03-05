@@ -1,0 +1,466 @@
+---
+title: "Lab02-01"
+output:
+  pdf_document: default
+  html_document: default
+date: '2022-12-03'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\tableofcontents
+\newpage
+
+
+# Install Package
+
+## 2.1.1 Install wooldridge package and read wage1 data.
+
+```{r}
+# install.packages("wooldridge")
+library(wooldridge)
+```
+# Data
+
+## 2.1.2 Also select frst 7 column of the data and name it as wage12 data.
+
+```{r}
+wage12 = wage1[,1:7]
+names(wage12)
+```
+
+# Variables
+
+```{r}
+wage = wage12$wage
+education = wage12$educ
+experience = wage12$exper
+tenure = wage12$tenure
+nonwhite = wage12$nonwhite
+female = wage12$female
+married = wage12$married
+```
+
+# Scatter Plot
+
+```{r}
+plot(wage12)
+```
+
+# Fitting the model by considering all explanatory variables
+
+## 2.1.3 Fit the model by considering wage as response variable and ft the model by considering all explanatory
+variables.
+
+$$wage = \beta_0 +\beta_1 \times education + \beta_2 \times experience + \beta_3 \times tenure + \beta_4 \times nonwhite + \beta_5 \times female + \beta_6 \times married + \epsilon$$
+
+```{r}
+ml01_1 = lm(wage ~ education + experience + tenure + nonwhite + female + married, data = wage12)
+
+summary(ml01_1)
+```
+
+In the above model we can see that __p-value__ for variables __education, tenure and female__ is __less than $0.05$__ thereby these are __significant variables__ for the given model.
+
+Also, __p-value__ for variables __experience, nonwhite and married__ is __greater than $0.05$__, thereby these are __insignificant variables__ for the given model. 
+
+We see that the value of __$R^2$__ is __$0.3682$__ and that of __adjusted $R^2$__ is __$0.3609$__, which can be interpreted by saying that the above considered variables explains __$36\%$__ variability of wage.
+
+
+# Dummy variables
+
+## 2.1.4 Use female as dummy variable and explain the result.
+
+We consider __female__ as __dummy variable__ and fitting the model.
+
+We describe the model as: 
+
+$$wage = \beta_0 + \beta_1\times female + \epsilon$$
+
+```{r}
+ml01_2 = lm(wage ~ female, data = wage12)
+summary(ml01_2)
+```
+
+From the above regression table we say that the __average wage of males__ is __$\$7.0995$__.
+
+Also, the average wage of females is $\$2.5118$ less than the total wage posed 
+by male and females.
+
+$$\$7.0995 - \$2.5118 = \$4.5877$$.
+
+Therefore, __average wage of females__ is __$\$4.5877$__.
+
+The __p value__ of female variable is less than $0.05$. Thereby, this variable is significant.
+
+The value of __$R^2$__ is only $0.1157$ and __adjusted $R^2$__ is near about same. Which means that only $\%11.5$ of variability of wages is explained by whether the person is female or not.
+
+Therefore, we interpret from the above regression table by saying that although wage depends on whether the person is female or not but if we consider only this as regressor then it is not a good fit for the model or in other words the __model is insignificant__.
+
+
+## 2.1.5 Also identify other dummy variables and ft the model and explain the results.
+
+### Considering nonwhite as dummy variable.
+
+We describe the model as: 
+
+$$wage = \beta_0 + \beta_1\times nonwhite + \epsilon$$
+
+
+```{r}
+ml01_3 = lm(wage ~ nonwhite, data = wage12)
+summary(ml01_3)
+```
+
+In this model we can see that __p value__ is $0.378$ which is greater than $0.05$. Therefore, the variable __nonwhite__ is __insignificant__ for our model.
+
+In addition to above, the value of __$R^2$__ and __adjusted $R^2$__ is __zero__. Therefore, the model is __insignificant__.
+
+
+### Considering married as dummy variable.
+
+We describe the model as: 
+
+$$wage = \beta_0 + \beta_1\times married + \epsilon$$
+
+
+```{r}
+ml01_4 = lm(wage ~ married, data = wage12)
+summary(ml01_4)
+```
+
+From the above regression table we say that the __average wage__ of person __married__ is __$\$1.7296$__ and that of __unmarried__ is $\$4.8439$.
+
+In this model we can see that __p value__ is almost __zero__ which is __less than $0.05$__. Therefore, the variable __married__ is __highly significant__ for our model.
+
+But, we see that the value of __$R^2$__ and __adjusted $R^2$__ is nearly $5\%$ which is very low. Therefore, this model is __insignificant__.
+
+## Concliusion for dummy variables
+
+From the considered dummy variables female, married and nonwhite only variable female is significant and rest are insignificant.
+
+
+# Forward and Backward model selection
+
+__Use Forward and Backward selection method to ft the accurate model and explain it.__
+
+## Forward Model Selection
+
+Now we are going to apply forward model selection method to figure out best fit model.
+
+Thereby we select one regressor first and then add other variables accordingly, until we get best fit for our model.
+
+### Education as explanatory variable
+
+We have the model as:
+
+$$wage = \beta_0 + \beta_1 \times education + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml01_5 = lm(wage ~ education, data = wage12)
+summary(ml01_5)
+```
+
+From the above model it is very clear that since p value for education is almost zero which is less than 0.05. Thereby, the explanatory variable __education is significant__.
+
+Also, the model has very low p value and almost zero, which indicates that the __model is significant__.
+
+But, the value of $R^2$ and adjusted $R^2$ is very low around __$0.164$__. This indicates that __education only explains $16\%$ of wage__. Thereby, if we consider only education as our explanatory variable then this __model is not the best fit__.
+
+
+### Education and experience as explanatory variables
+
+We have the model as:
+
+$$wage = \beta_0 + \beta_1 \times education + \beta_2 \times experience + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml01_6 = lm(wage ~ education + experience, data = wage12)
+summary(ml01_6)
+```
+
+  From the above model it is very clear that since p values for education and experience are almost zero which is less than 0.05. Thereby, the explanatory variable __education and experience are significant__.
+  
+  Also, the model has very low p value and almost zero, which indicates that the __model is significant__.
+  
+  But, the value of $R^2$ and adjusted $R^2$ is very low around __$0.22$__. This indicates that the __explanatory variables only explains $22\%$ of wage__. Thereby, if we consider only education and experience as our explanatory variable then this __model is not the best fit__.
+  
+  Since, it is clear that when compared to previous model the value of $R^2$ has increased also the model is significant. Therefore, we can consider this model and proceed further for forward selection.
+  
+
+### Education, experience and tenure as explanatory variables
+
+We have the model as:
+
+$$wage = \beta_0 + \beta_1 \times education + \beta_2 \times experience + \beta_3 \times tenure+ \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml01_7 = lm(wage ~ education + experience + tenure, data = wage12)
+summary(ml01_7)
+```
+
+From the above model it is very clear that since p values for education and tenure are almost zero which is less than 0.05. Thereby, the explanatory variable __education and tenure are significant__ for the model. But, the __p value__ of __experience variable__ is $0.0645$ which is greater than $0.05$, thereby __experience is not significant__ variable for this model.
+
+Also, the model has very low p value and almost zero, which indicates that the __model is significant__.
+
+But, the value of $R^2$ and adjusted $R^2$ is very low around __$0.30$__. This indicates that __explanatory variables only explains $30\%$ of wage__. Thereby, if we consider only education, experience and tenure as our explanatory variables then this __model is not the best fit__.
+
+Since, it is clear that when compared to previous model the value of $R^2$ has increased also the model is significant. Therefore, we can consider this model and proceed further for forward selection.
+
+### Education, experience, tenure and nonwhite as explanatory variables
+
+We have the model as:
+
+$$wage = \beta_0 + \beta_1 \times education + \beta_2 \times experience + \beta_3 \times tenure + \beta_4 \times nonwhite + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml01_8 = lm(wage ~ education + experience + tenure + nonwhite, data = wage12)
+summary(ml01_8)
+```
+
+From the above model it is very clear that since p values for education and tenure are almost zero which is less than 0.05. Thereby, the explanatory variable __education and tenure are significant__ for the model. But, the p value of experience variable is $0.0651$ which is almost close to $0.05$ thereby we consider __experience as significant__ variable for this model. 
+
+We see that the __nonwhite variable__ has __p value__ equal to $0.8794$ which is close to one. Therefore it is __highly insignificant__ for the model. Thereby we __drop__ this variable for further investigation.
+
+Also, the model has very low p value and almost zero, which indicates that the __model is significant__.
+
+But, the value of $R^2$ and adjusted $R^2$ is very low around __$0.3065$__ and $0.3011$. This indicates that __explanatory variables only explains $30\%$ of wage__. 
+Thereby, this __model is not the best fit__.
+
+Since, it is clear that when compared to previous model the value of $R^2$ has decreased therefore, we drop the insignificant variable ( _nonwhite_ ) and proceed further for forward selection.
+
+### Education, experience, tenure and female as explanatory variables
+
+We have the model as:
+
+$$wage = \beta_0 + \beta_1 \times education + \beta_2 \times experience + \beta_3 \times tenure + \beta_4 \times female + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml01_9 = lm(wage ~ education + experience + tenure + female, data = wage12)
+summary(ml01_9)
+```
+
+We see that all the explanatory variables are having __p value__ less than $0.05$. Therefore __all the explanatory variables are significant__.
+
+Also, the __p value__ for the model is almost equal to zero. Thereby, the model is significant.
+
+The value of $R^2$ and adjusted $R^2$ is around __$0.3635$__ and $0.3587$. This indicates that __explanatory variables explains around $36\%$ of wage__. 
+Thereby, this __model is a better fit__ from previous one. 
+
+Now, proceeding for other variables under forward selection method.
+
+### Education, experience, tenure, female and married as explanatory variables
+
+We have the model as:
+
+$$wage = \beta_0 + \beta_1 \times education + \beta_2 \times experience + \beta_3 \times tenure + \beta_4 \times female + \beta_5 \times married + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml01_10 = lm(wage ~ education + experience + tenure + female + married, data = wage12)
+summary(ml01_10)
+```
+
+From the above regression table it is clear that all the explanatory variables except experience have __p value__ less than or very close to $0.05$ therefore they are __significant__.  But, in case of experience the __p value__ comes out to be around $0.12$ therefore it is insignificant for the model.
+
+Also, we see that __p value__ for the __model__ is almost __zero__ therefore the model is significant.
+
+The value of $R^2$ and adjusted $R^2$ is around __$0.3682$__ and $0.3621$. This indicates that __explanatory variables explains around $36.2\%$ of wage__. 
+
+Although the experience variable is insignificant for this model but, on the other hand the value of $R^2$ has increased. Therfore we consider experience as one of the explanatory variables.
+
+Thereby, by considering the given explanatory variables this __model is the best fit by forward selection method__.
+
+
+Therefore, our __final and the best fit__ for the given explanatory variables by __forward selection method__ is given as follows:
+
+$$wage =  -1.61815 + 0.55568 \times education + 0.01874 \times experience + 0.13878 \times tenure - 1.74140 \times female + 0.55924 \times married + \epsilon$$
+
+
+
+## Backward Model Selection
+
+In backward model selection we consider all the explanatory variables fisrt and then we remove the most insignificant variable one by one.
+
+To start with, we consider all the explanatory variables in our model.
+
+
+### Education, experience, nonwhite, tenure, female and married as explanatory variables 
+
+We consider the model as:
+
+$$wage = \beta_0 + \beta_1 \times education + \beta_2 \times experience + \beta_3 \times nonwhite + \beta_4 \times tenure + \beta_5 \times female + \beta_6 \times married + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml01_11 = lm(wage ~ education + experience + nonwhite + tenure + female + married, data = wage12)
+summary(ml01_11)
+```
+
+From the above regression table, it is clear that all the explanatory variables are significant except experience and nonwhite. That is, all the variable have __p value__ less than $0.05$ except for experience and nonwhite.
+
+
+The __experience__ variable has __p value__ equal to $0.12$ and that of __nonwhite__ variable as $0.8775$ which are greater than $0.05$. Therefore these variables are __insignificant__ for the given model.
+
+The __p value__ for the __model__ is almost zero. Therefore the model is __significant__.
+
+The value of __$R^2$__ and __adjusted $R^2$__ are $0.3682$ and $0.3609$ respectively. Therefore, the explanatory variables explains about $36\%$ of variation in wages.
+
+We also notice that __nonwhite variable__ has the highest p value. Therefore, it is the most __insignificant__ variable in this model.
+
+In consideration to backward selection method we drop the most insignificant variable. thereby, we __drop nonwhite in the next model__.
+
+### Education, experience, tenure, female and married as explanatory variables
+
+We have the model as:
+
+$$wage = \beta_0 + \beta_1 \times education + \beta_2 \times experience + \beta_3 \times tenure + \beta_4 \times female + \beta_5 \times married + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml01_12 = lm(wage ~ education + experience + tenure + female + married, data = wage12)
+summary(ml01_12)
+```
+
+
+From the above regression table it is clear that all the explanatory variables except experience have __p value__ less than or very close to $0.05$ therefore they are __significant__.  But, in case of experience the __p value__ comes out to be around $0.12$ therefore it is insignificant for the model.
+
+Also, we see that __p value__ for the __model__ is almost __zero__ therefore the model is significant.
+
+The value of $R^2$ and adjusted $R^2$ is around __$0.3682$__ and $0.3621$ rspectively. This indicates that __explanatory variables explains around $36.2\%$ of wage__. 
+
+We also notice that __experience variable__ has the highest p value. Therefore, it is the most __insignificant__ variable in this model.
+
+In consideration to backward selection method we drop the most insignificant variable. thereby, we __drop exeperience in the next model__.
+
+
+### Education, tenure, female and married as explanatory variables
+
+We have the model as:
+
+$$wage = \beta_0 + \beta_1 \times education + \beta_2 \times tenure + \beta_3 \times female + \beta_4 \times married + \epsilon$$
+
+Now fitting the above model using _lm function_.
+
+```{r}
+ml01_13 = lm(wage ~ education + tenure + female + married, data = wage12)
+summary(ml01_13)
+```
+
+
+From the above regression table it is clear that all the explanatory variables have __p value__ less than $0.05$ therefore they are __significant__.
+
+Also, we see that __p value__ for the __model__ is almost __zero__ therefore the model is significant.
+
+The value of $R^2$ and adjusted $R^2$ is around __$0.3652$__ and $0.3604$ rspectively. This indicates that __explanatory variables explains around $36.04\%$ of wage__. 
+
+But, on comparison to the previous model, we see that the value of $R^2$ has decreased from $0.3621$ to $0.3604$ therefore, we declare that the previous model which contained experience variable was the most significant and explained the most about the variability of wage.
+
+
+
+Therefore, our __final and the best fit__ for the given explanatory variables by __backward selection method__ is given as follows:
+
+$$wage =  -1.61815 + 0.55568 \times education + 0.01874 \times experience + 0.13878 \times tenure - 1.74140 \times female + 0.55924 \times married + \epsilon$$
+
+# Best fit for the given model
+
+
+Now, we notice that the best fit model in forward and backward selection method comes out to be same.
+
+Therefore, our best fit model for the given data is given as: 
+
+$$wage =  -1.61815 + 0.55568 \times education + 0.01874 \times experience + 0.13878 \times tenure - 1.74140 \times female + 0.55924 \times married + \epsilon$$
+
+Since, we examined only seven explanatory variables, the value of $R^2$ was very low.
+The value of $R^2$ can be increased by examining more variables.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
